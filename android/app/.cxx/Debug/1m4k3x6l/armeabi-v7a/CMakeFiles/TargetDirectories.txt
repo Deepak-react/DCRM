@@ -1,0 +1,2 @@
+D:/CRM Application/crm_frontend/demo787/android/app/.cxx/Debug/1m4k3x6l/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/CRM Application/crm_frontend/demo787/android/app/.cxx/Debug/1m4k3x6l/armeabi-v7a/CMakeFiles/rebuild_cache.dir
