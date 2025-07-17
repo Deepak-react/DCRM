@@ -190,17 +190,6 @@ class _HomeState extends State<Home> {
                                           'Loading...')
                                 ],
                               ),
-
-                              // Text(
-                              //   "Total Calls",
-                              //   style: GoogleFonts.poppins(
-                              //       fontWeight: FontWeight.bold, fontSize: 15),
-                              // ),
-                              // Text(
-                              //   call_logs_count.length.toString(),
-                              //   style: GoogleFonts.poppins(
-                              //       fontWeight: FontWeight.w300, fontSize: 15),
-                              // ),
                             ],
                           ),
                         ),
@@ -231,12 +220,14 @@ class _HomeState extends State<Home> {
                       List<LogsModel> logs = snapshot.data!;
 
                       return ListView.builder(
-                        itemCount: logs.length ?? 0, // Default to 0 if null
+                        itemCount: logs.reversed.length ?? 0, // Default to 0 if null
                         itemBuilder: (context, index) {
+
+                          final reversedLogs = logs.reversed.toList();
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              callLogsCard(logs[index]),
+                              callLogsCard(reversedLogs[index], context),
                             ],
                           );
                         },
@@ -261,130 +252,98 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget callLogsCard(LogsModel logs) {
+  Widget callLogsCard(LogsModel logs, BuildContext context) { // BuildContext added for design context
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+
+    // Since logs.callType doesn't exist, we'll use a static icon and color
+    // or derive it from other existing properties if possible (e.g., duration > 0 implies answered)
+    // For now, let's use a generic call icon and color for design purposes.
+    final IconData staticCallIcon = Icons.call_end; // A generic call icon, could be Icons.phone, etc.
+    final Color staticIconColor = Colors.grey; // A neutral color
+
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // More generous vertical padding
       child: Material(
-        elevation: 10,
-        borderRadius: BorderRadius.circular(20),
+        elevation: 5, // Softer, more subtle shadow for a modern feel
+        borderRadius: BorderRadius.circular(15), // Increased border radius for a softer look
+        shadowColor: Colors.grey.withOpacity(0.15), // Lighter, less intrusive shadow color
         child: Container(
-          height: screenHeight * 0.17,
           width: screenWidth,
           decoration: BoxDecoration(
+            color: Colors.white, // Clean white background
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(
-              color: Color(0xFF164CA1), // Border color
-              width: 2, // Border width
+              color: Color(0xFFE5E5E5), // Very subtle, light grey border for definition
+              width: 0.8, // Thinner border for a cleaner look
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0xFF164CA1), // Shadow same as border
-                offset: Offset(2, 2), // Moves the shadow (X, Y)
-                blurRadius: 0, // No blur, just offset
-              ),
-            ],
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                leading: SvgPicture.asset(
-                  "assets/letter-d.svg",
-                  width: 30,
-                  height: 30,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Added padding for content within ListTile
+                leading: CircleAvatar( // More dynamic and visually appealing leading icon
+                  radius: 24, // Slightly larger avatar size
+                  backgroundColor: Color(0xFF164CA1).withOpacity(0.1), // Light, semi-transparent blue background
+                  child: Text(
+                    logs.callerName != null && logs.callerName!.isNotEmpty
+                        ? logs.callerName![0].toUpperCase()
+                        : '?', // Fallback if name is null or empty
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xFF164CA1), // Brand blue for the initial letter
+                    ),
+                  ),
                 ),
                 title: Text(
-                  logs.callerName.toString(),
+                  logs.callerName ?? 'Unknown Caller', // Handle null caller name gracefully
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.w600, // Semi-bold for clear emphasis
+                    fontSize: 17, // Slightly larger title
+                    color: Color(0xFF040F20), // Darker text for better readability
+                  ),
                 ),
                 subtitle: Text(
-                  logs.callLogNumber.toString(),
-                  style: TextStyle(color: Colors.grey),
+                  logs.callLogNumber ?? 'N/A', // Handle null number gracefully
+                  style: GoogleFonts.poppins(
+                    color: Colors.grey[600], // Softer grey for secondary info
+                    fontSize: 14,
+                  ),
                 ),
-                trailing: Text(logs.duration.toString()),
+                trailing: Column(
+                  mainAxisAlignment: MainAxisAlignment.center, // Vertically center content
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Icon(
+                      staticCallIcon, // Using static icon
+                      color: staticIconColor, // Using static color
+                      size: 20, // Slightly larger icon
+                    ),
+                    SizedBox(height: 4), // Small spacing between icon and duration
+                    Text(
+                      logs.duration != null
+                          ? '${logs.duration}s' // Display duration with 's'
+                          : 'N/A', // If duration is null, show N/A
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: Colors.grey[700], // Darker grey for duration
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5), // Shadow color
-                          spreadRadius: 2, // Spread radius
-                          blurRadius: 6, // Blur radius
-                          offset: Offset(3, 3), // Shadow offset (X, Y)
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                        backgroundColor: Color(0xFFF4F5FB),
-                        child: SvgPicture.asset("assets/reminder.svg")),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5), // Shadow color
-                          spreadRadius: 2, // Spread radius
-                          blurRadius: 6, // Blur radius
-                          offset: Offset(3, 3), // Shadow offset (X, Y)
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                        backgroundColor: Color(0xFFF4F5FB),
-                        child: SvgPicture.asset("assets/meeting.svg")),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5), // Shadow color
-                          spreadRadius: 2, // Spread radius
-                          blurRadius: 6, // Blur radius
-                          offset: Offset(3, 3), // Shadow offset (X, Y)
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                        backgroundColor: Color(0xFFF4F5FB),
-                        child: SvgPicture.asset("assets/notes.svg")),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5), // Shadow color
-                          spreadRadius: 2, // Spread radius
-                          blurRadius: 6, // Blur radius
-                          offset: Offset(3, 3), // Shadow offset (X, Y)
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                        backgroundColor: Color(0xFFF4F5FB),
-                        child: SvgPicture.asset("assets/call.svg")),
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 12.0), // Consistent horizontal padding, increased bottom padding
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribute actions evenly
+                  children: [
+                    _buildActionCircle("assets/reminder.svg"), // No tooltip, just visual
+                    _buildActionCircle("assets/meeting.svg"), // No tooltip, just visual
+                    _buildActionCircle("assets/notes.svg"), // No tooltip, just visual
+                    _buildActionCircle("assets/call.svg"), // No tooltip, just visual
+                  ],
+                ),
               ),
             ],
           ),
@@ -393,6 +352,32 @@ class _HomeState extends State<Home> {
     );
   }
 
+// Helper function for the action circles (no context needed if no functionality)
+  Widget _buildActionCircle(String assetPath) {
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.15), // Lighter shadow for the circles
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: CircleAvatar(
+        radius: 22, // Slightly larger radius for a better visual presence
+        backgroundColor: Color(0xFFF7F9FC), // Very light, almost white background
+        child: SvgPicture.asset(
+          assetPath,
+          width: 20, // Larger SVG for better visibility
+          height: 20,
+          colorFilter: ColorFilter.mode(Color(0xFF164CA1), BlendMode.srcIn), // Brand blue for the icon color
+        ),
+      ),
+    );
+  }
   Widget customLoading() {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;

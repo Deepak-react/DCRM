@@ -7,7 +7,6 @@
 
 
 
-
     <application
         android:label="demo787"
         android:name="${applicationName}"

@@ -1,95 +1,10 @@
-// import 'package:flutter/material.dart';
-//
-// void main() {
-//   runApp(MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: BottomNavWithFAB(),
-//     );
-//   }
-// }
-//
-// class BottomNavWithFAB extends StatefulWidget {
-//   @override
-//   _BottomNavWithFABState createState() => _BottomNavWithFABState();
-// }
-//
-// class _BottomNavWithFABState extends State<BottomNavWithFAB> {
-//   int _index = 0;
-//
-//   void _onItemTapped(int index) {
-//     setState(() {
-//       _index = index;
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(child: Text("Selected Index: $_index")),
-//       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-//       floatingActionButton: FloatingActionButton(
-//         backgroundColor: Colors.blue,
-//         shape: CircleBorder(),
-//         elevation: 6,
-//         onPressed: () {},
-//         child: Icon(Icons.add, color: Colors.white, size: 30),
-//       ),
-//       bottomNavigationBar: BottomAppBar(
-//         shape: CircularNotchedRectangle(),
-//         notchMargin: 8.0,
-//         color: Colors.white,
-//         child: Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//           child: Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceAround,
-//             children: [
-//               _buildNavItem(Icons.home, "Home", 0),
-//               _buildNavItem(Icons.build, "Service", 1),
-//               SizedBox(width: 40), // Space for FAB
-//               _buildNavItem(Icons.add, "Post", 2, isCenter: true), // FAB Label
-//               _buildNavItem(Icons.credit_card, "Credit", 3),
-//               _buildNavItem(Icons.person, "Profile", 4),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   Widget _buildNavItem(IconData icon, String label, int index,
-//       {bool isCenter = false}) {
-//     return GestureDetector(
-//       onTap: () => _onItemTapped(index),
-//       child: Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           if (!isCenter)
-//             Icon(icon, color: _index == index ? Colors.blue : Colors.grey),
-//           SizedBox(height: 4),
-//           Text(
-//             label,
-//             style: TextStyle(
-//               fontSize: 12,
-//               color: _index == index ? Colors.blue : Colors.grey,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts for consistent typography
+import 'package:flutter_svg/flutter_svg.dart'; // Import if you plan to use SVG placeholders
 
 class ImagePickerScreen extends StatefulWidget {
   @override
@@ -121,23 +36,24 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
   Future<void> _pickAndCropImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile =
-        await picker.pickImage(source: ImageSource.gallery);
+    await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
-        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), // Square Crop
-        //   cropStyle: CropStyle.rectangle, // Change to CropStyle.circle if needed
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1), // Square Crop
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: "Crop Image",
-            toolbarColor: Colors.blue,
+            toolbarColor: Color(0xFF164CA1), // Brand blue for toolbar
             toolbarWidgetColor: Colors.white,
-            lockAspectRatio: true, // Lock the aspect ratio
+            initAspectRatio: CropAspectRatioPreset.square, // Ensure square aspect ratio
+            lockAspectRatio: true,
           ),
           IOSUiSettings(
             title: "Crop Image",
             aspectRatioLockEnabled: true,
+            aspectRatioPresets: [CropAspectRatioPreset.square],
           ),
         ],
       );
@@ -158,19 +74,92 @@ class _ImagePickerScreenState extends State<ImagePickerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Image Picker & Cropper")),
+      backgroundColor: Colors.white, // Consistent white background
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0, // No shadow for a cleaner look
+        title: Center(
+          child: Text(
+            "Profile Picture", // More descriptive title
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        actions: const [
+          SizedBox(width: 48), // To balance the centered title
+        ],
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _selectedImage != null
-                ? Image.file(_selectedImage!,
-                    width: 200, height: 200, fit: BoxFit.cover)
-                : Text("No image selected"),
-            SizedBox(height: 20),
+            // Display Area for the Image
+            Container(
+              width: 180, // Fixed size for the circular avatar
+              height: 180,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle, // Circular shape
+                color: Color(0xFFE8F4F8), // Light background when no image
+                border: Border.all(
+                  color: Color(0xFF164CA1).withOpacity(0.3), // Subtle border
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 3,
+                    blurRadius: 10,
+                    offset: Offset(0, 5), // Soft shadow
+                  ),
+                ],
+              ),
+              child: ClipOval( // Clip the image to an oval shape
+                child: _selectedImage != null
+                    ? Image.file(
+                  _selectedImage!,
+                  width: 180,
+                  height: 180,
+                  fit: BoxFit.cover, // Cover the entire circle
+                )
+                    : Icon(
+                  Icons.person_rounded, // Placeholder icon
+                  size: 100, // Large icon
+                  color: Colors.grey[400], // Soft grey color
+                ),
+              ),
+            ),
+            SizedBox(height: 30), // Increased spacing
+
+            // Button to Pick and Crop Image
             ElevatedButton(
               onPressed: _pickAndCropImage,
-              child: Text("Pick and Crop Image"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF164CA1), // Brand blue background
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15), // Generous padding
+                elevation: 5, // Subtle shadow
+                shadowColor: Color(0xFF164CA1).withOpacity(0.4), // Shadow matching button color
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Wrap content
+                children: [
+                  Icon(Icons.photo_library, color: Colors.white, size: 22), // Icon
+                  SizedBox(width: 10), // Spacing
+                  Text(
+                    "Change Profile Picture", // More descriptive text
+                    style: GoogleFonts.poppins(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600, // Semi-bold
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -49,14 +49,12 @@ class CallLogsController {
 
       // Check the HTTP response code
       if (response.statusCode == 200) {
-        print("Get call Logs service");
         final List<dynamic> jsonData = jsonDecode(response.body);
 
         //Returns an list of LogsModel Objects
         List<LogsModel> logs =
             jsonData.map((json) => LogsModel.fromJson(json)).toList();
 
-        print("The list of call logs are: $logs");
 
         return logs;
       } else if (response.statusCode == 401) {
@@ -95,10 +93,6 @@ class CallLogsController {
       print("Into the post calls function2");
       print("the call position at 0th position is : $logJson ");
 
-      String apiKey = "f77fdc8916c94e4";
-      String apiSecret = "667fcfcf7454f8b";
-
-      print("The api key and the secret is: $apiSecret, $apiKey");
 
       // print("The call type is: $callType");
 
@@ -124,6 +118,9 @@ class CallLogsController {
         return "Invalid call type";
       }
 
+
+
+
       String? user_email = await SharedPrefsHelper.getUserEmail();
 
       String callType = convertTypeId_to_string(parsedCallerTypeId);
@@ -131,58 +128,16 @@ class CallLogsController {
       String callStartType = convertToERPNextFormat(start_time);
 
       print("The call type is: $callType");
+      print("The API URL is: $postCallAPI");
+      print("The Json value is: ${jsonEncode(logJson)}");
 
-      Map<String, dynamic> incomingJson = {
-        "from": logJson['call_log_number'],
-        "duration": logJson['duration'],
-        "type": callType,
-        "medium": "DCRM",
-        "start_time": callStartType
-      };
-      print("The json is : $incomingJson");
 
-      print(hrms_call_logs_post);
-      print("Final encoded JSON: ${jsonEncode(incomingJson)}");
+      if (logJson['caller_type_id'] != null) {
+        logJson['caller_type_id'] = logJson['caller_type_id'].toString();
+      }
 
-      final response = await http.post(
-        Uri.parse(postCallAPI),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token"
-        },
-        body: jsonEncode(logJson),
-      );
-      print(response);
-      print(response.body);
-      print(response.statusCode);
-      // Check the HTTP response code
-      // if (response.statusCode == 200) {
-      //   print("Call Logs stored successfully !!");
-      //   return "Successful";
-      // } else if (response.statusCode == 401) {
-      //   return "Invalid credentials";
-      // } else if (response.statusCode == 500) {
-      //   return "Server error";
-      // } else {
-      //   print("Something went wrong ");
-      //   log("Unexpected response: ${response.body}");
-      //   return "Failed";
-      // }
 
-      final hrms_response = await http.post(Uri.parse(hrms_call_logs_post),
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "token $apiKey:$apiSecret"
-          },
-          body: jsonEncode(incomingJson));
-
-      print("The response from HRMS is: $hrms_response");
-
-      print("THe HRMS status is: ${hrms_response.statusCode}");
-      print("The error is: ${hrms_response.body}");
-
-      if (hrms_response.statusCode == 200) {
-        print("Call Logs stored in hrms successfully !!");
+      try {
         final response = await http.post(
           Uri.parse(postCallAPI),
           headers: {
@@ -191,31 +146,35 @@ class CallLogsController {
           },
           body: jsonEncode(logJson),
         );
-        print(response);
-        print(response.body);
-        print(response.statusCode);
-        // Check the HTTP response code
+
+        print("Status Code: ${response.statusCode}");
+        print("Response Body: ${response.body}");
+
         if (response.statusCode == 200) {
-          print("Call Logs stored successfully !!");
+          print("Call Logs stored successfully!");
           return "Successful";
         } else if (response.statusCode == 401) {
+          print("Unauthorized access - token might be invalid");
           return "Invalid credentials";
         } else if (response.statusCode == 500) {
+          print("Server error occurred");
           return "Server error";
         } else {
-          print("Something went wrong ");
-          log("Unexpected response: ${response.body}");
+          print("Unexpected error: ${response.statusCode}");
           return "Failed";
         }
-      } else if (hrms_response.statusCode == 401) {
-        return "Invalid credentials";
-      } else if (hrms_response.statusCode == 500) {
-        return "Server error";
-      } else {
-        print("Something went wrong ");
-        log("Unexpected response: ${hrms_response.body}");
-        return "Failed";
+      } on SocketException catch (e) {
+        print("No internet connection: $e");
+        return "No internet";
+      } on FormatException catch (e) {
+        print("Bad response format: $e");
+        return "Invalid response format";
+      } catch (e) {
+        print("Unexpected error: $e");
+        return "Error";
       }
+
+
     } on SocketException {
       log("No internet connection");
       return "No internet";

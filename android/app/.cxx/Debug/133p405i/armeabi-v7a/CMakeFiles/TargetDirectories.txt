@@ -1,0 +1,2 @@
+D:/DCRM/DCRM/android/app/.cxx/Debug/133p405i/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/DCRM/DCRM/android/app/.cxx/Debug/133p405i/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -1,4 +1,4 @@
-import 'package:demo787/colors.dart';
+import 'package:demo787/colors.dart'; // Assuming this defines your color palette
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +13,8 @@ class salesGroup extends StatefulWidget {
 }
 
 class _salesGroupState extends State<salesGroup> {
+  // `isBlob` state variable is not used in the final design for visual changes,
+  // but kept as per your original code.
   bool isBlob = false;
 
   @override
@@ -22,88 +24,166 @@ class _salesGroupState extends State<salesGroup> {
 
     final salesRank = [
       salesRankData(
-          values: 1, height: screenHeight * 0.075, image: "assets/user1.svg"),
+          values: 3, height: screenHeight * 0.12, image: "assets/user3.svg"), // Adjusted height and order for visual hierarchy
       salesRankData(
-          values: 2, height: screenHeight * 0.15, image: "assets/user2.svg"),
+          values: 1, height: screenHeight * 0.18, image: "assets/user1.svg"), // Tallest for 1st place
       salesRankData(
-          values: 3, height: screenHeight * 0.2, image: "assets/user3.svg"),
+          values: 2, height: screenHeight * 0.15, image: "assets/user2.svg"), // Mid-height for 2nd place
     ];
 
+    // Sort by height for correct display order if not manually ordered above
+    // salesRank.sort((a, b) => a.values.compareTo(b.values)); // Sort by rank number
+
     return Scaffold(
-      // bottomNavigationBar: BottomNavigationBar(items: [
-      //   BottomNavigationBarItem(icon: SvgPicture.asset("assets/call.svg")),
-      //   BottomNavigationBarItem(icon: SvgPicture.asset("assets/call.svg")),
-      //   BottomNavigationBarItem(icon: SvgPicture.asset("assets/call.svg"))
-      // ]),
-      appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(
-            color: Colors.black,
-          )),
+      backgroundColor: Colors.white, // Ensure consistent white background
+      appBar: AppBar(
+        // Using standard AppBar instead of PreferredSize for better integration
+        backgroundColor: Colors.white,
+        elevation: 0, // No shadow for a cleaner, modern look
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new, // More common back icon
+            color: Colors.black87, // Slightly softer black
+            size: 20,
+          ),
+          onPressed: () {
+            Navigator.pop(context); // Example back navigation
+          },
+        ),
+        title: Center(
+          // Center the title
+          child: Text(
+            "Sales Group",
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+        ),
+        actions: [
+          SizedBox(width: 48), // To balance the centered title if needed
+        ],
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            AppBar(
-              backgroundColor: Colors.white,
-              leading: Icon(Icons.keyboard_arrow_left_outlined, size: 20),
-              title: Text("Sales Group"),
-            ),
-            SizedBox(
-              height: 20,
-            ),
+            SizedBox(height: 20),
+            // Sales Rank Section
             Material(
-              elevation: 3,
-              borderRadius: BorderRadius.circular(12),
+              elevation: 8, // Softer, more pronounced shadow
+              borderRadius: BorderRadius.circular(20), // More rounded corners
+              shadowColor: Colors.grey.withOpacity(0.3), // Lighter, diffused shadow
               child: Container(
-                padding: EdgeInsets.only(bottom: 20),
-                height: screenHeight * 0.3,
+                padding: EdgeInsets.symmetric(vertical: 20), // Increased vertical padding
+                height: screenHeight * 0.35, // Adjusted height to accommodate changes
                 width: screenWidth * 0.9,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient( // Added subtle gradient for depth
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFFE0F2F7), // Light blue-grey start
+                      Color(0xFFD6EEF5), // Slightly darker end
+                    ],
+                  ),
                 ),
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: salesRank.map((rank) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SvgPicture.asset(
-                            rank.image,
-                            height: screenHeight * 0.04,
-                            width: screenWidth * 0.04,
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(12),
-                                  topLeft: Radius.circular(12)),
-                              color: Color(0xFFD2EBCD),
-                            ),
-                            width: screenWidth * 0.15,
-                            height: rank.height,
-                            child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  rank.values.toString(),
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold),
-                                )),
-                          ),
-                        ],
-                      );
-                    }).toList()),
+                child: Column(
+                  children: [
+                    Text(
+                      "Top Performers",
+                      style: GoogleFonts.poppins(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF164CA1), // Brand blue for title
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Expanded(
+                      child: SingleChildScrollView( // Makes content scrollable to prevent overflow
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: salesRank.map((rank) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min, // Prevents taking full vertical space
+                              children: [
+                                SvgPicture.asset(
+                                  rank.image,
+                                  height: screenHeight * 0.05,
+                                  width: screenWidth * 0.05,
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  rank.values == 1
+                                      ? "Alice"
+                                      : (rank.values == 2 ? "Bob" : "Charlie"),
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(15),
+                                      topLeft: Radius.circular(15),
+                                    ),
+                                    color: rank.values == 1
+                                        ? Color(0xFFFFD700)
+                                        : (rank.values == 2
+                                        ? Color(0xFFC0C0C0)
+                                        : Color(0xFFCD7F32)),
+                                  ),
+                                  width: screenWidth * 0.18,
+                                  height: rank.height,
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "${rank.values}",
+                                      style: GoogleFonts.poppins(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             SizedBox(
-              height: 20,
+              height: 30, // Increased spacing
             ),
+            // Sales Group List Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0), // Added horizontal padding
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Sales Teams", // Clearer section title
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF040F20), // Dark text for heading
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 15), // Spacing below title
             Container(
-              height: screenHeight * 0.465,
+              height: screenHeight * 0.465, // Keep original height
               width: screenWidth * 0.9,
               child: ScrollConfiguration(
                 behavior: ScrollBehavior()
@@ -114,8 +194,10 @@ class _salesGroupState extends State<salesGroup> {
                       return GestureDetector(
                           onTap: () {
                             setState(() {
-                              isBlob = !isBlob;
+                              isBlob = !isBlob; // Still triggers a state change, but no visual effect based on isBlob
                             });
+                            // You can add Navigator.push here if tap on card should go to salesUserList
+                            // Navigator.push(context, MaterialPageRoute(builder: (context) => salesUserList()));
                           },
                           child: salesGroupList());
                     }),
@@ -133,81 +215,77 @@ class _salesGroupState extends State<salesGroup> {
     return Column(
       children: [
         Material(
-          elevation: 8,
-          borderRadius: BorderRadius.circular(12),
-          shadowColor: Color(0xFF164CA1),
+          elevation: 6, // Softer shadow
+          borderRadius: BorderRadius.circular(15), // More rounded corners
+          shadowColor: Colors.grey.withOpacity(0.2), // Lighter, diffused shadow
           child: InkWell(
             onTap: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => salesUserList()));
             },
+            borderRadius: BorderRadius.circular(15), // Match Material's border radius for tap effect
             child: Container(
-              height: screenHeight * 0.2,
-              width: screenWidth * 0.88,
+              // height: screenHeight * 0.2, // Let content dictate height
+              width: screenWidth * 0.9, // Slightly wider to match main card width
               decoration: BoxDecoration(
-                  // border: Border.all(
-                  //   color: Color(0xFF164CA1), // Border color
-                  //   width: 3, // Border width
-                  // ),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Color(0xFF164CA1), // Shadow same as border
-                  //     offset: Offset(2, 2), // Moves the shadow (X, Y)
-                  //     blurRadius: 0, // No blur, just offset
-                  //   ),
-                  // ],
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Color(0xFFF0F0F0), width: 1)), // Subtle light grey border
               child: Column(
                 children: [
                   Material(
-                    color: Color(0xFF3F6CB3),
+                    color: Color(0xFF194283), // Darker blue for the header
                     borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12)),
-                    elevation: 3,
+                        topLeft: Radius.circular(15), // Match container's radius
+                        topRight: Radius.circular(15)),
+                    elevation: 0, // No elevation needed here, main Material handles it
                     child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Added padding
                         leading: Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(50),
                               border: Border.all(
-                                  width: 1, color: Color(0xFF9BC9FF))),
+                                  width: 1.5, color: Color(0xFF9BC9FF))), // Slightly thicker border for avatar
                           child: CircleAvatar(
-                            backgroundColor: Color(0xFFD6F2FB),
+                            backgroundColor: Color(0xFFD6F2FB), // Lighter blue for avatar background
                             child: SvgPicture.asset(
                               "assets/salesGroup.svg",
                               height: 30,
                               width: 30,
+                              colorFilter: ColorFilter.mode(Color(0xFF164CA1), BlendMode.srcIn), // Apply brand color to SVG
                             ),
                           ),
                         ),
                         title: Text(
                           "Team CRMx",
-                          style: TextStyle(
+                          style: GoogleFonts.poppins(
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600, // Semi-bold
                               fontSize: 17),
                         ),
-                        subtitle: Text("Team CRMx",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                            ))),
+                        subtitle: Text(
+                          "Sales Group ID: 12345", // More descriptive subtitle
+                          style: GoogleFonts.poppins(
+                            color: Colors.white70, // Softer white for subtitle
+                            fontSize: 13,
+                            fontWeight: FontWeight.normal, // Regular weight
+                          ),
+                        )),
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 15, // Increased spacing
                   ),
-                  listCardDetails("Group leader", "Rishi"),
-                  listCardDetails("Best performance", "Vignesh"),
-                  listCardDetails("Total call", "250 "),
+                  listCardDetails("Group Leader", "Rishi"),
+                  listCardDetails("Best Performance", "Vignesh"),
+                  listCardDetails("Total Calls", "250"),
+                  SizedBox(height: 15), // Padding at the bottom
                 ],
               ),
             ),
           ),
         ),
         SizedBox(
-          height: 20,
+          height: 20, // Spacing between cards in the list
         )
       ],
     );
@@ -215,24 +293,33 @@ class _salesGroupState extends State<salesGroup> {
 
   Widget listCardDetails(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(top: 5.0, left: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0), // Consistent padding
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween, // Use spaceBetween for aligned text
         children: [
           Expanded(
-              flex: 2,
-              child: Text(
-                label,
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w300),
-              )),
+            flex: 2,
+            child: Text(
+              label,
+              style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w400, // Regular weight
+                  color: Colors.grey[700], // Softer grey
+                  fontSize: 14),
+            ),
+          ),
           Expanded(
-              flex: 2,
-              child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    value,
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-                  )))
+            flex: 2,
+            child: Align(
+              alignment: Alignment.centerLeft, // Align value to left
+              child: Text(
+                value,
+                style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF040F20), // Darker text for values
+                    fontSize: 14),
+              ),
+            ),
+          )
         ],
       ),
     );

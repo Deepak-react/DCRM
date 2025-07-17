@@ -1,5 +1,5 @@
 class ApiConstant {
-  static const String host = "hrms.xcodefix.in:3005/";
+  static const String host = "143.110.178.254:3005/";
   static const String host0 = "192.168.0.124:3005/";
 
   static const String hrms_call_logs = "hrms.xcodefix.in/";

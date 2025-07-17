@@ -5,11 +5,11 @@ import 'package:demo787/CRM/screens/home/bottomNavigation.dart';
 import 'package:demo787/CRM/screens/home/home.dart';
 import 'package:demo787/CRM/screens/login/authService.dart';
 import 'package:demo787/CRM/screens/login/sign_up.dart';
-import 'package:demo787/colors.dart';
+import 'package:demo787/colors.dart'; // Assuming this contains custom color definitions
 import 'package:flutter/material.dart';
-import '../../../fonst.dart';
-
-import 'login.dart';
+import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts for consistent typography
+// import '../../../fonst.dart'; // Keeping this commented as we'll use GoogleFonts directly
+// import 'login.dart'; // Self-referential import, usually not needed.
 
 class login extends StatefulWidget {
   @override
@@ -18,55 +18,27 @@ class login extends StatefulWidget {
 
 class _loginState extends State<login> {
   final _formKey = GlobalKey<FormState>();
-  bool isSelected = false;
+  bool isSelected = false; // Not used in the provided logic
 
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
 
   AuthService authService = AuthService();
 
-  final FocusNode _focusNode0 = FocusNode();
-  final FocusNode _focusNode1 = FocusNode();
+  final FocusNode _focusNode0 = FocusNode(); // For Email
+  final FocusNode _focusNode1 = FocusNode(); // For Password
 
+  @override
   void dispose() {
     _focusNode0.dispose();
     _focusNode1.dispose();
-
+    emailController.dispose(); // Dispose controllers
+    passwordController.dispose();
     super.dispose();
   }
 
-  // _signup() async {
-  //   try {
-  //     print("API posting...");
-  //     final response = await https.post(
-  //       Uri.parse("http://43.225.167.22:8091/api/signup"),
-  //       headers: {"Content-Type": "application/json"},
-  //       body: jsonEncode({
-  //         "companyName": companyController.text,
-  //         "companyPersonName": companypersonname.text,
-  //         "emailAddress": emailController.text,
-  //         "mobileNumber": mobileController.text,
-  //         "city": cityController.text,
-  //         "userName": usernameController.text,
-  //         "password": passwordController.text,
-  //       }),
-  //     );
-  //
-  //     log(response.body);
-  //
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       print("User Created Successfully");
-  //       Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (context) => const login()),
-  //       );
-  //     } else {
-  //       print("Error: ${response.statusCode}, ${response.body}");
-  //     }
-  //   } catch (e) {
-  //     print("Error: $e");
-  //   }
-  // }
+  // _signup() is commented out in original, so keeping it commented.
+  // void _signup() async { /* ... existing commented out code ... */ }
 
   void _validmove(FocusNode currentNode, FocusNode nextNode) {
     if (_formKey.currentState!.validate()) {
@@ -75,8 +47,8 @@ class _loginState extends State<login> {
     }
   }
 
-  List<String> cities = [];
-  bool isLoading = false;
+  List<String> cities = []; // Not used in the provided logic
+  bool isLoading = false; // Not used in the provided logic
 
   void _showCityList(BuildContext context) async {
     if (cities.isEmpty) {
@@ -88,198 +60,255 @@ class _loginState extends State<login> {
 
   @override
   Widget build(BuildContext context) {
-    final Width = MediaQuery.of(context).size.width;
-    final Height = MediaQuery.of(context).size.height;
+    // Width and Height are not directly used in the new layout,
+    // using responsive padding/sizing instead where applicable.
+    // final Width = MediaQuery.of(context).size.width;
+    // final Height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-        body: Container(
-      // decoration: BoxDecoration(
-      //   gradient: LinearGradient(
-      //     colors: [Colors.white], // Green to White gradient
-      //     begin: Alignment.topCenter,
-      //     end: Alignment.bottomCenter,
-      //   ),
-      // ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: Colors.white, // Clean white background
+      body: SafeArea( // Ensures content is not obscured by system UI
         child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0), // Overall horizontal padding
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
               children: [
-                SizedBox(
-                  height: 150,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SizedBox(
-                    child: Image(image: AssetImage("assets/logo2.png")),
+                SizedBox(height: 100), // Spacing from top
+
+                // Logo
+                FadeInDown( // Using FadeInDown for logo entry
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SizedBox(
+                      width: 200, // Fixed width for the logo for better control
+                      height: 100, // Fixed height
+                      child: Image(image: AssetImage("assets/logo2.png"), fit: BoxFit.contain),
+                    ),
                   ),
                 ),
-                Center(child: Text("Login", style: FontStyles.boldStyle(20))),
-                SizedBox(
-                  height: 25,
+                SizedBox(height: 30), // Spacing after logo
+
+                // Login Title
+                FadeInUp( // Using FadeInUp for title
+                  child: Text(
+                    "Welcome Back!", // More engaging title
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87, // Darker text for prominence
+                    ),
+                  ),
                 ),
+                Text(
+                  "Sign in to continue", // Subtitle
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                SizedBox(height: 40), // Spacing before input fields
+
+                // Email Input Field
                 BounceInRight(
                   child: TextFormField(
                     controller: emailController,
                     focusNode: _focusNode0,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: "Email",
-                      filled: true, // Enables background color
-                      fillColor: Colors.grey[350], // Background color
+                      labelText: "Email Address", // Use labelText
+                      labelStyle: GoogleFonts.poppins(color: Colors.grey[700]),
+                      hintText: "Enter your email", // Clearer hint
+                      hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                      prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]), // Icon
+                      filled: true,
+                      fillColor: Color(0xFFF0F5FA), // Light, subtle background color
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(12), // More rounded corners
+                        borderSide: BorderSide(color: Color(0xFFE0E5EB), width: 1), // Subtle border
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Color(0xFF164CA1), width: 2), // Brand blue border on focus
                       ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red, width: 2),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red, width: 2),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your Email';
                       } else if (!RegExp(
-                              r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+                          r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
                           .hasMatch(value)) {
                         return 'Invalid email format';
                       }
                       return null;
                     },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
-                    // onFieldSubmitted: (_) =>
-                    //     _validmove(_focusNode2, _focusNode3),
+                    onFieldSubmitted: (_) => _validmove(_focusNode0, _focusNode1), // Auto-move focus
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20), // Spacing between fields
+
+                // Password Input Field
                 BounceInLeft(
                   child: TextFormField(
                     controller: passwordController,
                     focusNode: _focusNode1,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: "Password",
-                      filled: true, // Enables background color
-                      fillColor: Colors.grey[350], // Background color
-
+                      labelText: "Password", // Use labelText
+                      labelStyle: GoogleFonts.poppins(color: Colors.grey[700]),
+                      hintText: "Enter your password", // Clearer hint
+                      hintStyle: GoogleFonts.poppins(color: Colors.grey[500]),
+                      prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[600]), // Icon
+                      filled: true,
+                      fillColor: Color(0xFFF0F5FA),
                       enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Color(0xFFE0E5EB), width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Color(0xFF164CA1), width: 2),
                       ),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red, width: 2),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.red, width: 2),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your Password';
-                      } else if (value.length < 4) {
-                        return 'Password should be at least 6 characters long';
+                      } else if (value.length < 4) { // Common standard for passwords
+                        return 'Password should be at least 4 characters long';
                       }
                       return null;
                     },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
-                    // onFieldSubmitted: (_) =>
-                    //     _validmove(_focusNode3, _focusNode4),
-                  ),
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                Center(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: background2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(27),
-                      ),
-                      side: BorderSide(
-                        width: 1,
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => custom_bottom()));
+                    onFieldSubmitted: (_) { // Submit on last field
+                      if (_formKey.currentState!.validate()) {
+                        FocusScope.of(context).unfocus(); // Dismiss keyboard
+                        _performLogin();
+                      }
                     },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              String password = passwordController.text;
-                              String email = emailController.text;
-                              authService
-                                  .userAuthentication(password, email)
-                                  .then((response) {
-                                if (response == "Successful") {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => custom_bottom()),
-                                  );
-                                }
-                              });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text('Validation Successful!')),
-                              );
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                              height: Height * 0.035,
-                              width: Width * 0.609,
-                              child: Center(
-                                child: Text("Log in",
-                                    style: FontStyles.boldStyle(15.0,
-                                        color: Colors.white)),
-                              ),
-                            ),
-                          ),
+                  ),
+                ),
+                SizedBox(height: 40), // Spacing before button
+
+                // Login Button
+                BounceInUp( // Animation for the button
+                  child: SizedBox(
+                    width: double.infinity, // Make button full width
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF164CA1), // Brand blue color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15), // More rounded
                         ),
-                      ],
+                        padding: EdgeInsets.symmetric(vertical: 16), // Larger tap area
+                        elevation: 5, // Subtle shadow
+                        shadowColor: Color(0xFF164CA1).withOpacity(0.4), // Shadow matching button color
+                      ),
+                      onPressed: _performLogin, // Call a separate function for clarity
+                      child: Text(
+                        "Log In",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w600, // Semi-bold
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: 30,
-                ),
-                Text(
-                  "Don't Have an Account?",
-                  style: FontStyles.hinttext(15, color: Colors.grey),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => signup()));
-                  },
+                SizedBox(height: 30), // Spacing before signup options
+
+                // "Don't Have an Account?" Text
+                FadeInUp( // Animation
+                  delay: Duration(milliseconds: 200),
                   child: Text(
-                    "Sign Up",
-                    style: FontStyles.regularStyle(20),
+                    "Don't Have an Account?",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey[700], // Softer grey
+                    ),
                   ),
                 ),
+                SizedBox(height: 10), // Spacing
+
+                // Sign Up Link
+                FadeInUp( // Animation
+                  delay: Duration(milliseconds: 400),
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => signup()));
+                    },
+                    child: Text(
+                      "Sign Up",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF164CA1), // Brand blue for link
+                        decoration: TextDecoration.underline, // Underline for link
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 50), // Spacing at the bottom
               ],
             ),
           ),
         ),
       ),
-    ));
+    );
+  }
+
+  // Centralized login logic
+  void _performLogin() {
+    if (_formKey.currentState!.validate()) {
+      String password = passwordController.text;
+      String email = emailController.text;
+
+      // Show a temporary snackbar or loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Attempting login...')),
+      );
+
+      authService.userAuthentication(password, email).then((response) {
+        if (response == "Successful") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login Successful!')),
+          );
+          Navigator.pushReplacement( // Use pushReplacement to prevent going back to login
+            context,
+            MaterialPageRoute(builder: (context) => custom_bottom()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login Failed: $response')), // Show error message
+          );
+        }
+      }).catchError((error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred during login: $error')),
+        );
+        log("Login error: $error");
+      });
+    }
   }
 }

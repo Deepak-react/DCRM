@@ -15,154 +15,190 @@ class userSettings extends StatefulWidget {
 }
 
 class _userSettingsState extends State<userSettings> {
-  bool _isExpanded = false; // Controls expansion state
+  // `_isExpanded` is for the commented-out expandable section, kept as original.
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    // double screenWidth = MediaQuery.of(context).size.width; // Not directly used in the final design
+    // double screenHeight = MediaQuery.of(context).size.height; // Not directly used in the final design
+
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(color: Colors.black),
+      backgroundColor: Colors.white, // Consistent white background
+      appBar: AppBar(
+        // Using standard AppBar for better integration
+        backgroundColor: Colors.white,
+        elevation: 0, // No shadow for a cleaner look
+        leading: IconButton(
+          onPressed: () {
+            // Navigate back to the bottom navigation, not necessarily 'custom_bottom()' directly
+            Navigator.pop(context);
+            // Example if you specifically want to go to a particular tab in bottom navigation
+            // Navigator.pushAndRemoveUntil(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => custom_bottom(initialIndex: 0)), // Go to home tab
+            //       (Route<dynamic> route) => false,
+            // );
+          },
+          icon: const Icon(Icons.arrow_back_ios_new,
+              size: 20, color: Colors.black87), // Soft black icon
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppBar(
-                shadowColor: Colors.black,
-                backgroundColor: Colors.white,
-                leading: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => custom_bottom()));
-                  },
-                  icon: Icon(Icons.arrow_back_ios_new,
-                      size: 20, color: Colors.black),
-                ),
-                title: Padding(
-                  padding: EdgeInsets.only(left: 100),
-                  child: Text(
-                    "Profile",
-                    style: TextStyle(
-                        fontSize: 17,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
+        title: const Center(
+          // Center the title
+          child: Text(
+            "Profile",
+            style: TextStyle(
+                fontSize: 18, // Slightly larger font
+                color: Colors.black,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
+        actions: const [
+          SizedBox(width: 48), // To balance the centered title
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // Align content to start
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0), // Consistent padding
+              child: ListTile(
+                contentPadding: EdgeInsets.zero, // Remove default padding
+                leading: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle, // Circular shape for the border
+                    border: Border.all(
+                      width: 2, // Thicker border for profile picture
+                      color: Color(0xFF9BC9FF).withOpacity(0.5), // Softer, semi-transparent blue border
+                    ),
+                  ),
+                  child: CircleAvatar(
+                    radius: 30, // Larger avatar for profile
+                    backgroundColor: Color(0xFFD6F2FB), // Light blue background
+                    child: SvgPicture.asset(
+                      "assets/user1.svg", // Using user1.svg as a placeholder for profile pic
+                      width: 40, // Larger SVG for profile pic
+                      height: 40,
+                      colorFilter: ColorFilter.mode(Color(0xFF164CA1), BlendMode.srcIn), // Brand blue color
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(),
-                  child: ListTile(
-                      leading: SvgPicture.asset(
-                        "assets/user1.svg",
-                        width: 50,
-                        height: 50,
-                      ),
-                      title: Text("Sal#01554",
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: Colors.grey)),
-                      subtitle: Text("Deepak_Yeager",
-                          style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold, fontSize: 18))),
+                title: Text(
+                  "Deepak_Yeager", // Display name prominently
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20, // Larger font for name
+                      color: Color(0xFF040F20)), // Darker text for readability
+                ),
+                subtitle: Text(
+                  "Sal#01554", // Display ID below the name
+                  style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w500, // Regular weight for ID
+                      fontSize: 14,
+                      color: Colors.grey[700]), // Softer grey for ID
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 7.0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Account",
-                      style: GoogleFonts.poppins(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
-              ),
-              FutureBuilder<List<userData>>(
-                future: UserSettingService()
-                    .userTileData(), // Fetch data asynchronously
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator(); // Show loading indicator
-                  } else if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}"); // Handle errors
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Text("No Data Available"); // Handle empty data case
-                  }
+            ),
+            SizedBox(height: 25), // Increased spacing
 
-                  return Column(
-                    children: snapshot.data!.map((data) {
-                      // Use map to iterate over data
-                      return Padding(
-                        padding:
-                            const EdgeInsets.only(top: 7, left: 10, right: 10),
+            // Account Section
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 10.0), // Consistent left padding
+              child: Text(
+                "Account",
+                style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF040F20)), // Darker text for heading
+              ),
+            ),
+            FutureBuilder<List<userData>>(
+              future: UserSettingService().userTileData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator(color: Color(0xFF164CA1))); // Styled loading indicator
+                } else if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text("Error: ${snapshot.error}", style: GoogleFonts.poppins(color: Colors.red)),
+                  );
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Text("No Account Data Available", style: GoogleFonts.poppins(color: Colors.grey[700])),
+                  );
+                }
+
+                return Column(
+                  children: snapshot.data!.map((data) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0), // Consistent padding
+                      child: Material(
+                        elevation: 4, // Softer shadow
+                        borderRadius: BorderRadius.circular(15), // More rounded corners
+                        shadowColor: Colors.grey.withOpacity(0.15), // Lighter, diffused shadow
                         child: Container(
                           decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                    offset: Offset(2, 2),
-                                    color: Color(0xFFF0F0F0))
-                              ],
-                              border: Border.all(
-                                  width: 2, color: Color(0xFFF0F0F0))),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                            border: Border.all(
+                                width: 0.8, color: Color(0xFFE5E5E5)), // Subtle light grey border
+                          ),
                           child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Padding inside ListTile
                             title: Text(data.label,
                                 style: GoogleFonts.poppins(
-                                    fontSize: 12,
+                                    fontSize: 13, // Slightly larger font for label
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xFF3B3D42))),
+                                    color: Colors.grey[700])), // Softer grey for label
                             subtitle: Text(data.value,
                                 style: GoogleFonts.poppins(
-                                    fontSize: 15,
+                                    fontSize: 16, // Larger font for value
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFF3B3D42))),
+                                    color: Color(0xFF040F20))), // Darker text for value
                           ),
                         ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
 
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 7.0),
-                child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "General",
-                      style: GoogleFonts.poppins(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    )),
-              ),
+            SizedBox(height: 30), // Increased spacing
 
-              Padding(
-                padding: const EdgeInsets.only(top: 7, left: 10, right: 10),
+            // General Section
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0, bottom: 10.0), // Consistent left padding
+              child: Text(
+                "General",
+                style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF040F20)), // Darker text for heading
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0), // Consistent padding
+              child: Material(
+                elevation: 4, // Softer shadow
+                borderRadius: BorderRadius.circular(15), // More rounded corners
+                shadowColor: Colors.grey.withOpacity(0.15), // Lighter, diffused shadow
                 child: Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                            offset: Offset(2, 2), color: Color(0xFFF0F0F0))
-                      ],
-                      border: Border.all(width: 2, color: Color(0xFFF0F0F0))),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 0.8, color: Color(0xFFE5E5E5)), // Subtle light grey border
+                  ),
                   child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8), // Padding inside ListTile
                     title: Text(
-                      "Exclude contacts",
+                      "Exclude Contacts", // Corrected label
                       style: GoogleFonts.poppins(
-                          fontSize: 12,
+                          fontSize: 15, // Adjusted font size
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF3B3D42)),
+                          color: Color(0xFF040F20)), // Darker text for title
                     ),
                     trailing: IconButton(
                         onPressed: () {
@@ -172,118 +208,77 @@ class _userSettingsState extends State<userSettings> {
                                   builder: (context) =>
                                       Exclude_contact_list()));
                         },
-                        icon: Icon(Icons.arrow_right_sharp)),
+                        icon: const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 18)), // Modern forward icon, softer color
                   ),
                 ),
               ),
+            ),
 
-              // InkWell(
-              //   onTap: () {},
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(top: 7, left: 10, right: 10),
-              //     child: Container(
-              //       decoration: BoxDecoration(
-              //           color: Colors.white,
-              //           borderRadius: BorderRadius.circular(12),
-              //           boxShadow: [
-              //             BoxShadow(
-              //                 offset: Offset(2, 2), color: Color(0xFFF0F0F0))
-              //           ],
-              //           border: Border.all(width: 2, color: Color(0xFFF0F0F0))),
-              //       child: ListTile(
-              //         title: Text("Exclude contacts",
-              //             style: GoogleFonts.poppins(
-              //                 fontSize: 15,
-              //                 fontWeight: FontWeight.w500,
-              //                 color: Color(0xFF3B3D42))),
-              //       ),
-              //     ),
-              //   ),
-              // )
+            // Placeholder for the commented-out expandable section.
+            // If you decide to re-implement it, ensure its design aligns with the new aesthetic.
+            // Example of how it might look, still commented out:
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+            //   child: Material(
+            //     elevation: 4,
+            //     borderRadius: BorderRadius.circular(15),
+            //     shadowColor: Colors.grey.withOpacity(0.15),
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         color: Colors.white,
+            //         borderRadius: BorderRadius.circular(15),
+            //         border: Border.all(width: 0.8, color: Color(0xFFE5E5E5)),
+            //       ),
+            //       child: Column(
+            //         children: [
+            //           ListTile(
+            //             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            //             title: Text(
+            //               "Advanced Settings",
+            //               style: GoogleFonts.poppins(
+            //                   fontSize: 15,
+            //                   fontWeight: FontWeight.w500,
+            //                   color: Color(0xFF040F20)),
+            //             ),
+            //             trailing: IconButton(
+            //               onPressed: () {
+            //                 setState(() {
+            //                   _isExpanded = !_isExpanded;
+            //                 });
+            //               },
+            //               icon: Icon(
+            //                 _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+            //                 color: Colors.grey, size: 20,
+            //               ),
+            //             ),
+            //           ),
+            //           if (_isExpanded)
+            //             Padding(
+            //               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            //               child: Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   Text("Notification Preferences", style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
+            //                   SizedBox(height: 5),
+            //                   Text("Data Usage", style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700])),
+            //                 ],
+            //               ),
+            //             ),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
 
-              // InkWell(
-              //   onTap: () {
-              //     setState(() {
-              //       _isExpanded = !_isExpanded; // Toggle expansion
-              //     });
-              //   },
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(
-              //         top: 7, left: 10, right: 10, bottom: 10),
-              //      // child: AnimatedContainer(
-              //     //   duration: Duration(milliseconds: 300), // Animation duration
-              //     //   curve: Curves.easeInOut, // Smooth animation curve
-              //     //   height: _isExpanded
-              //     //       ? screenHeight * 0.2
-              //     //       : screenHeight * 0.075, // Expanded/Collapsed height
-              //     //   decoration: BoxDecoration(
-              //     //     color: Colors.white,
-              //     //     borderRadius: BorderRadius.circular(12),
-              //     //     boxShadow: [
-              //     //       BoxShadow(
-              //     //           offset: Offset(2, 2), color: Color(0xFFF0F0F0))
-              //     //     ],
-              //     //     border: Border.all(width: 2, color: Color(0xFFF0F0F0)),
-              //     //   ),
-              //     //   child: Column(
-              //     //     children: [
-              //     //       ListTile(
-              //     //         title: Text(
-              //     //           "Exclude contacts",
-              //     //           style: GoogleFonts.poppins(
-              //     //             fontSize: 15,
-              //     //             fontWeight: FontWeight.w500,
-              //     //             color: Color(0xFF3B3D42),
-              //     //           ),
-              //     //         ),
-              //     //         trailing: Icon(
-              //     //           _isExpanded
-              //     //               ? Icons.keyboard_arrow_up
-              //     //               : Icons.keyboard_arrow_down,
-              //     //         ),
-              //     //       ),
-              //     //
-              //     //       // Hidden content that expands
-              //     //       Column(
-              //     //         children: [
-              //     //           Visibility(
-              //     //             visible: _isExpanded,
-              //     //             child: Container(
-              //     //               height: screenHeight * 0.1,
-              //     //               child: Padding(
-              //     //                 padding: const EdgeInsets.all(10.0),
-              //     //                 child: Column(
-              //     //                   crossAxisAlignment:
-              //     //                       CrossAxisAlignment.start,
-              //     //                   children: [
-              //     //                     Text("Hidden Data 1",
-              //     //                         style: TextStyle(fontSize: 14)),
-              //     //                     SizedBox(height: 5),
-              //     //                   ],
-              //     //                 ),
-              //     //               ),
-              //     //             ),
-              //     //           ),
-              //     //         ],
-              //     //       ),
-              //     //     ],
-              //     //   ),
-              //     // ),
-              //
-              //     child: Container(),
-              //   ),
-              // ),
-              SizedBox(
-                height: 20,
-              ),
-              SizedBox(
-                height: 40,
-              ),
-            ],
-          ),
-        ));
+            SizedBox(height: 40), // Increased bottom spacing
+          ],
+        ),
+      ),
+    );
   }
 
+  // The `userDataTile` widget is not used in the enhanced code as the FutureBuilder directly maps
+  // to the desired ListTile design. Keeping it for reference if you plan to use it elsewhere.
   Widget userDataTile(label, value) {
     return Column(
       children: [
@@ -296,6 +291,7 @@ class _userSettingsState extends State<userSettings> {
   }
 }
 
+// Assuming userData and other services/models are defined correctly elsewhere
 class userData {
   final String label;
   final String value;
