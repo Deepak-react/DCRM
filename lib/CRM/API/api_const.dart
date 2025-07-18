@@ -1,5 +1,6 @@
 class ApiConstant {
-  static const String host = "143.110.178.254:3005/";
+  // static const String host = "143.110.178.254:3005/";
+  static const String host = "192.168.1.75:3005/";
   static const String host0 = "192.168.0.124:3005/";
 
   static const String hrms_call_logs = "hrms.xcodefix.in/";
@@ -16,6 +17,7 @@ class ApiConstant {
 // final URL
   static const String api_base_url = "$schema$host$api_base";
   static const String auth_base_url = "$schema$host$auth_base";
+
 
   static const String add_user = "/add-user";
   static const String create_sales_group = "/create-sales-group";

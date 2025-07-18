@@ -13,7 +13,6 @@ class SharedPrefsHelper {
     required String? email,
     required String? company,
     required int? user_id,
-    required String? sim_slot,
     required String? phone_number,
   }) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -21,7 +20,6 @@ class SharedPrefsHelper {
     await prefs.setString(companyKey, company!);
     await prefs.setInt(userIdKey, user_id!);
     await prefs.setString(phoneKey, phone_number!);
-    await prefs.setString(simKey, sim_slot!);
   }
 
   static Future<String?> getUserEmail() async {

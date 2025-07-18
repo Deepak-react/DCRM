@@ -31,9 +31,10 @@ class CallLogsController {
       // Validate inputs before making API call
 
       final String? token = await authService.getToken();
-      int? user_id = await SharedPrefsHelper.getUserId();
+      String? user_id = await SharedPrefsHelper.getUserEmail();
+      print("The user email ID is: $user_id");
       final String finalUrl =
-          "${ApiConstant.api_base_url}${ApiConstant.get_call_logs}/$user_id";
+          "${ApiConstant.api_base_url}${ApiConstant.get_call_logs}?user_email=$user_id";
 
       print("The access token is: $token");
 
@@ -117,8 +118,6 @@ class CallLogsController {
         print("Caller type ID could not be converted to int!");
         return "Invalid call type";
       }
-
-
 
 
       String? user_email = await SharedPrefsHelper.getUserEmail();

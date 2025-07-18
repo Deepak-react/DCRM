@@ -53,7 +53,6 @@ class AuthService {
 
         // Extract token and user details safely & store in secured storage
         String? token = data.message?.token;
-        String? sim_slot = data.message?.user?.simSlot;
         //To store in the shared prefernces
         int? user_id = data.message?.user?.id;
         String? role = data.message?.user?.role;
@@ -62,7 +61,7 @@ class AuthService {
         String? userCompany = data.message?.user?.companyName;
 
         print(
-            "The user details are: $userCompany, $user_mail, $role, $user_id, $sim_slot , $phone_number ");
+            "The user details are: $userCompany, $user_mail, $role, $user_id , $phone_number ");
 
         if (token == null || userCompany == null) {
           log("Invalid response structure: $data");
@@ -78,7 +77,6 @@ class AuthService {
           phone_number: phone_number,
           company: userCompany,
           user_id: user_id,
-          sim_slot: sim_slot,
         );
         return "Successful";
       } else if (response.statusCode == 401) {
